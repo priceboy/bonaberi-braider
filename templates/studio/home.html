@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Phanie Magic Touch | Hair artistry{% endblock %}
+{% block body %}
+<main>
+  <div class="hero-wrap">
+    <header class="nav">
+      <a href="/" class="wordmark">{{ business.name }}</a>
+      <nav>
+        <a href="#work">Work</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#visit">Visit us</a>
+        <a class="nav-cta" href="#visit">Book now</a>
+      </nav>
+      <button class="menu" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      </button>
+    </header>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Douala · Cameroon</p>
+        <h1>{{ business.hero_title }}<br/><em>Made to be remembered.</em></h1>
+        <p class="hero-text">{{ business.hero_text }}</p>
+        <a href="#gallery" class="button">Explore our work
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>
+        </a>
+      </div>
+      {% with featured=styles|first %}
+      <div class="hero-image">
+        <img src="{{ featured.display_image }}" alt="A featured hairstyle by Phanie Magic Touch">
+        <div class="hero-stamp">EST.<br/>2026</div>
+      </div>
+      {% endwith %}
+      <p class="hero-note">Scroll to discover<br/>our signature work <span>↓</span></p>
+    </section>
+  </div>
+
+  <section id="work" class="work section">
+    <div class="eyebrow">Latest work</div>
+    <div class="carousel" data-carousel aria-roledescription="carousel">
+      {% for style in styles|slice:":5" %}
+      <button class="carousel-card" data-slide="{{ forloop.counter0 }}" data-title="{{ style.title }}" data-category="{{ style.category }}" data-href="{% url 'style_detail' style.slug %}" aria-label="Show {{ style.title }}" aria-current="{% if forloop.counter0 == 0 %}true{% else %}false{% endif %}">
+        <img src="{{ style.display_image }}" alt="{{ style.title }}">
+      </button>
+      {% endfor %}
+    </div>
+    <div class="carousel-caption" data-carousel-caption>
+      {% with first=styles|slice:":5"|first %}
+      <p data-caption-category>{{ first.category }}</p>
+      <h2 data-caption-title>{{ first.title }}</h2>
+      <a data-caption-link href="{% url 'style_detail' first.slug %}">View this style <span>↗</span></a>
+      {% endwith %}
+    </div>
+    <div class="carousel-controls" data-carousel-controls>
+      {% for style in styles|slice:":5" %}
+      <button data-dot="{{ forloop.counter0 }}" aria-label="Show slide {{ forloop.counter }}" class="{% if forloop.counter0 == 0 %}active{% endif %}"></button>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="gallery" class="gallery section">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">The portfolio</p>
+        <h2>Made for your<br/><em>main character</em> moment.</h2>
+      </div>
+      <p class="section-copy">Every appointment is a collaboration between your mood, your hair, and our attention to detail.</p>
+    </div>
+    <div class="filters" aria-label="Filter styles">
+      <button class="selected" data-filter="All">All</button>
+      {% for category in categories %}
+      <button data-filter="{{ category }}">{{ category }}</button>
+      {% endfor %}
+    </div>
+    <div class="masonry">
+      {% for style in styles %}
+      <a class="gallery-item {% cycle 'item-0' 'item-1' 'item-2' 'item-3' 'item-4' %}" data-category="{{ style.category }}" href="{% url 'style_detail' style.slug %}">
+        <img src="{{ style.display_image }}" alt="{{ style.title }}">
+        <div><p>{{ style.category }}</p><h3>{{ style.title }}</h3></div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="visit" class="visit section">
+    <div>
+      <p class="eyebrow">Visit the studio</p>
+      <h2>Beauty, with<br/><em>intention.</em></h2>
+      <p class="section-copy">A calm, considered space to reset, be cared for, and leave feeling unmistakably like yourself.</p>
+    </div>
+    <div class="visit-card">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <p>{{ business.address }}</p>
+      <div class="hours">{% for hour in business.hours %}<span>{{ hour }}</span>{% endfor %}</div>
+      <a class="text-link" href="{{ business.directions_url }}" target="_blank" rel="noreferrer">Get directions <span>↗</span></a>
+    </div>
+  </section>
+
+  <section class="book">
+    <p class="eyebrow">Your hair deserves the moment</p>
+    <h2>Let’s create<br/><em>something beautiful.</em></h2>
+    <a class="button light" href="{{ whatsapp_chat }}" target="_blank" rel="noreferrer">Book an appointment
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>
+    </a>
+  </section>
+
+  <footer>
+    <a href="/" class="wordmark">{{ business.name }}</a>
+    <p>Hair artistry for every version of you.</p>
+    <a href="{{ business.instagram_url }}" target="_blank" rel="noreferrer">Instagram ↗</a>
+    <a href="/admin/">Studio login</a>
+  </footer>
+
+  {% block whatsapp %}
+  <a class="whatsapp" href="{{ whatsapp_chat }}" target="_blank" rel="noreferrer" aria-label="Chat with us on WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+    <span>Chat with us</span>
+  </a>
+  {% endblock %}
+</main>
+{% endblock %}
