@@ -31,20 +31,54 @@
       });
     }
 
+    var AUTOPLAY_MS = 4500;
+    var interval = null;
+
+    function play() {
+      stop();
+      interval = setInterval(function () {
+        active = (active + 1) % n;
+        layout();
+      }, AUTOPLAY_MS);
+    }
+
+    function stop() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
+    function restart() {
+      if (interval) {
+        play();
+      }
+    }
+
     cards.forEach(function (card, index) {
       card.addEventListener("click", function () {
         active = index;
         layout();
+        restart();
       });
     });
     dots.forEach(function (dot, index) {
       dot.addEventListener("click", function () {
         active = index;
         layout();
+        restart();
       });
     });
 
+    carousel.addEventListener("mouseenter", stop);
+    carousel.addEventListener("mouseleave", play);
+    carousel.addEventListener("touchstart", stop, { passive: true });
+    carousel.addEventListener("touchend", play);
+
     layout();
+    if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      play();
+    }
   }
 
   var filters = Array.prototype.slice.call(document.querySelectorAll("[data-filter]"));
