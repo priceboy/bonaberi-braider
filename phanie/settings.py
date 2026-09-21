@@ -10,7 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +28,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j6)qd-mci$p=6q#ri1gt8*sy(l3bv2cfwsl2h#zvb5ovxqso0y'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-j6)qd-mci$p=6q#ri1gt8*sy(l3bv2cfwsl2h#zvb5ovxqso0y')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = [
+    host for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app,.now.sh').split(',') if host
+]
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.vercel.app').split(',') if origin
+]
 
 
 # Application definition
@@ -37,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'studio',
 ]
 
@@ -73,12 +91,19 @@ WSGI_APPLICATION = 'phanie.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use a managed Postgres database in production (set DATABASE_URL, e.g. a
+# Supabase Postgres connection string). Falls back to SQLite for local dev.
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+
+    DATABASES = {'default': dj_database_url.parse(os.getenv('DATABASE_URL'), conn_max_age=600)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 
 # Password validation
@@ -117,8 +142,37 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Uploaded media goes to Supabase Storage (S3-compatible) when configured.
+# Set SUPABASE_S3_BUCKET to enable it; otherwise files are stored locally
+# under MEDIA_ROOT and served by Django in development only.
+if os.getenv('SUPABASE_S3_BUCKET'):
+    _media_storage = {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        'OPTIONS': {
+            'access_key': os.getenv('SUPABASE_S3_ACCESS_KEY_ID', ''),
+            'secret_key': os.getenv('SUPABASE_S3_SECRET_ACCESS_KEY', ''),
+            'bucket_name': os.getenv('SUPABASE_S3_BUCKET', ''),
+            'endpoint_url': os.getenv('SUPABASE_S3_ENDPOINT'),
+            'region_name': os.getenv('SUPABASE_S3_REGION', 'us-east-1'),
+            'addressing_style': 'path',
+            'querystring_auth': False,
+            'file_overwrite': False,
+            'custom_domain': os.getenv('SUPABASE_S3_PUBLIC_URL', '').replace('https://', '').replace('http://', ''),
+        },
+    }
+else:
+    _media_storage = {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    }
+
+STORAGES = {
+    'default': _media_storage,
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -25,15 +25,18 @@
         </a>
       </div>
       {% with featured=styles|first %}
+      {% if featured %}
       <div class="hero-image">
         <img src="{{ featured.display_image }}" alt="A featured hairstyle by Phanie Magic Touch">
         <div class="hero-stamp">EST.<br/>2026</div>
       </div>
+      {% endif %}
       {% endwith %}
       <p class="hero-note">Scroll to discover<br/>our signature work <span>↓</span></p>
     </section>
   </div>
 
+  {% if styles %}
   <section id="work" class="work section">
     <div class="eyebrow">Latest work</div>
     <div class="carousel" data-carousel aria-roledescription="carousel">
@@ -56,6 +59,7 @@
       {% endfor %}
     </div>
   </section>
+{% endif %}
 
   <section id="gallery" class="gallery section">
     <div class="section-head">
