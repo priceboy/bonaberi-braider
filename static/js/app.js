@@ -31,7 +31,7 @@
       });
     }
 
-    var AUTOPLAY_MS = 4500;
+    var AUTOPLAY_MS = 2000;
     var interval = null;
 
     function play() {
