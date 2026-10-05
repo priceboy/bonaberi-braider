@@ -7,9 +7,26 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     Back to portfolio
   </a>
-  <div class="style-image">
-    <img src="{{ style.display_image }}" alt="{{ style.title }}">
+  {% with images=style.display_images %}
+  <div class="style-gallery" data-gallery>
+    <div class="style-image">
+      {% for image in images %}
+      <img src="{{ image }}" alt="{{ style.title }}{% if style.image_count > 1 %} — photo {{ forloop.counter }} of {{ images|length }}{% endif %}" data-gallery-image {% if not forloop.first %}loading="lazy"{% endif %}>
+      {% endfor %}
+    </div>
+    {% if images|length > 1 %}
+    <div class="style-thumbs" data-gallery-thumbs>
+      {% for image in images %}
+      <button class="style-thumb{% if forloop.first %} active{% endif %}" type="button" data-thumb="{{ forloop.counter0 }}" aria-label="Show photo {{ forloop.counter }} of {{ images|length }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+        <img src="{{ image }}" alt="" loading="lazy">
+        <span>{{ forloop.counter }}</span>
+      </button>
+      {% endfor %}
+    </div>
+    <p class="style-counter" data-gallery-counter aria-live="polite">1 / {{ images|length }}</p>
+    {% endif %}
   </div>
+  {% endwith %}
   <article>
     <p class="eyebrow">{{ style.category }}</p>
     <h1>{{ style.title }}</h1>

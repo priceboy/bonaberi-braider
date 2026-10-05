@@ -56,8 +56,13 @@ python manage.py test
 
 - `BusinessProfile` — single-row store for studio name, hero copy, WhatsApp
   number, address, hours, directions and Instagram URLs.
-- `Hairstyle` — the portfolio pieces with title, slug, category, caption, an
-  optional local image or external URL, plus `published` and `featured` flags.
+- `Hairstyle` — the portfolio pieces with title, slug, category, caption, a
+  cover image (optional local image or external URL), plus `published` and
+  `featured` flags.
+- `StyleImage` — extra photos for a hairstyle, ordered by `position`. Add them
+  in the hairstyle's admin page via the **Style images** inline section.
+  `Hairstyle.display_images()` returns the cover followed by every extra photo,
+  which is what the style page renders as a switchable gallery.
 
 The `studio` migrations seed a sample business profile and six sample
 hairstyles (external image URLs) so the site is populated out of the box.

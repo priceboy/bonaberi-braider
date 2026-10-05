@@ -18,7 +18,9 @@ def home(request):
     business = get_business()
     context = {
         "business": business,
-        "styles": list(Hairstyle.objects.filter(published=True)),
+        "styles": list(
+            Hairstyle.objects.filter(published=True).prefetch_related("images")
+        ),
         "categories": ["Braids", "Locs", "Twists", "Wigs", "Natural Hair", "Other"],
         "whatsapp_chat": whatsapp_url(business.whatsapp_number, "Hi, I'd like to book an appointment.")
         if business
@@ -28,7 +30,9 @@ def home(request):
 
 
 def style_detail(request, slug):
-    style = get_object_or_404(Hairstyle, slug=slug, published=True)
+    style = get_object_or_404(
+        Hairstyle.objects.prefetch_related("images"), slug=slug, published=True
+    )
     business = get_business()
     context = {
         "business": business,

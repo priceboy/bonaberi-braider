@@ -78,6 +78,7 @@
     <div class="masonry">
       {% for style in styles %}
       <a class="gallery-item {% cycle 'item-0' 'item-1' 'item-2' 'item-3' 'item-4' %}" data-category="{{ style.category }}" href="{% url 'style_detail' style.slug %}">
+        {% if style.image_count > 1 %}<span class="gallery-count">{{ style.image_count }} photos</span>{% endif %}
         <img src="{{ style.display_image }}" alt="{{ style.title }}">
         <div><p>{{ style.category }}</p><h3>{{ style.title }}</h3></div>
       </a>

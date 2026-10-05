@@ -81,6 +81,46 @@
     }
   }
 
+  var gallery = document.querySelector("[data-gallery]");
+  if (gallery) {
+    var slides = Array.prototype.slice.call(gallery.querySelectorAll("[data-gallery-image]"));
+    var thumbs = Array.prototype.slice.call(gallery.querySelectorAll("[data-thumb]"));
+    var counter = gallery.querySelector("[data-gallery-counter]");
+    var current = 0;
+
+    function show(index) {
+      current = (index + slides.length) % slides.length;
+      slides.forEach(function (slide, i) {
+        slide.classList.toggle("active", i === current);
+      });
+      thumbs.forEach(function (thumb, i) {
+        thumb.classList.toggle("active", i === current);
+        thumb.setAttribute("aria-current", i === current ? "true" : "false");
+      });
+      if (counter) {
+        counter.textContent = current + 1 + " / " + slides.length;
+      }
+    }
+
+    if (slides.length > 1) {
+      gallery.classList.add("is-slider");
+      show(0);
+      thumbs.forEach(function (thumb, index) {
+        thumb.addEventListener("click", function () {
+          show(index);
+        });
+      });
+      gallery.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight") {
+          show(current + 1);
+        }
+        if (event.key === "ArrowLeft") {
+          show(current - 1);
+        }
+      });
+    }
+  }
+
   var filters = Array.prototype.slice.call(document.querySelectorAll("[data-filter]"));
   var galleryItems = Array.prototype.slice.call(document.querySelectorAll("[data-category]"));
   if (filters.length && galleryItems.length) {
