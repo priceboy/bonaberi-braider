@@ -33,8 +33,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-j6)qd-mci$p=6q#ri1g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = [
-    host for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app,.now.sh').split(',') if host
+ALLOWED_HOSTS = ['*'] + [
+    host for host in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,.vercel.app,.now.sh,testserver').split(',') if host
 ]
 
 if not DEBUG:
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'storages',
     'studio',
+    'website',
 ]
 
 MIDDLEWARE = [

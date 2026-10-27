@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}How to Find Us | Phanie Magic Touch{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'website/css/find_us.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="find-us">
+    <header class="find-us__header">
+        <span class="find-us__eyebrow">Location</span>
+        <h1 class="find-us__title">How to Find Us</h1>
+        <p class="find-us__subtitle">
+            Discretion, clarity, and ease of arrival. Follow the sequence below for a seamless journey to the atelier.
+        </p>
+    </header>
+
+    <div class="find-us__grid">
+        <section class="find-us__map-section">
+            <div class="find-us__map-frame">
+                {% if location_configured and map_embed_url %}
+                <iframe src="{{ map_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                {% else %}
+                <div class="find-us__map-placeholder">
+                    <span class="find-us__map-placeholder-title">Map to be configured</span>
+                    <p>Exact address and map coordinates are still pending from the owner.</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="find-us__map-actions">
+                {% if map_open_url %}
+                <a class="find-us__map-link" href="{{ map_open_url }}" target="_blank" rel="noreferrer">
+                    Open in Maps
+                    <span aria-hidden="true">↗</span>
+                </a>
+                {% endif %}
+                {% if address %}
+                <div class="find-us__map-link" style="pointer-events: none;">{{ address }}</div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="find-us__steps">
+            <header class="find-us__steps-header">
+                <span class="find-us__eyebrow">Route</span>
+                <h2 class="find-us__steps-title">Step by step</h2>
+                <p class="find-us__subtitle">Numbered for clarity. Follow in order on arrival.</p>
+            </header>
+            {% if steps %}
+                {% for step in steps %}
+                <article class="find-us__step">
+                    <div class="find-us__step-image">
+                        {% if step.image %}
+                        <img src="{{ step.image.url }}" alt="{{ step.title|default:'Directional photograph' }}" loading="lazy">
+                        {% else %}
+                        <div class="find-us__step-placeholder"></div>
+                        {% endif %}
+                    </div>
+                    <div class="find-us__step-content">
+                        <span class="find-us__step-number">Step {{ forloop.counter }}</span>
+                        {% if step.title %}<h3>{{ step.title }}</h3>{% endif %}
+                        <p class="find-us__step-instruction">{{ step.instruction|linebreaksbr }}</p>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <p class="find-us__empty">Directional photographs and instructions will appear here once added in Admin.</p>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}

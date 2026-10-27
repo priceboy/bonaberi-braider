@@ -1,0 +1,126 @@
+/* Base styles - Luxury Salon */
+:root {
+    --bg: #0f0d0b;
+    --bg-elev: #171310;
+    --text-primary: #f7f3ee;
+    --text-secondary: #c9c0b6;
+    --accent: #b9a07e;
+    --border: rgba(185, 160, 126, 0.35);
+    --nav-bg: rgba(15, 13, 11, 0.82);
+    --nav-border: rgba(185, 160, 126, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.page-content {
+    min-height: 100vh;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.bottom-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+    width: min(420px, calc(100% - 24px));
+}
+
+.bottom-nav__inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid var(--nav-border);
+    border-radius: 999px;
+    padding: 6px 10px;
+    box-shadow: 0 30px 60px -40px rgba(185, 160, 126, 0.8);
+}
+
+.bottom-nav__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    transition: color 200ms ease, background 200ms ease;
+}
+
+.bottom-nav__item.is-active,
+.bottom-nav__item[aria-current="page"] {
+    color: var(--text-primary);
+    background: linear-gradient(90deg, rgba(185, 160, 126, 0.25) 0%, transparent 100%);
+}
+
+.bottom-nav__item:hover {
+    color: var(--text-primary);
+}
+
+body.viewer-open .bottom-nav {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .bottom-nav {
+        width: min(520px, calc(100% - 48px));
+    }
+    .bottom-nav__item {
+        font-size: 0.78rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

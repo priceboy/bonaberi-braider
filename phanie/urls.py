@@ -21,8 +21,21 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('studio.urls')),
+    path('', include(('website.urls', 'website'), namespace='website')),
+    path('our-work/', include(('website.urls', 'website'), namespace='website_ow')),  # not ideal, but handle
 ]
+
+# Add direct routes at root level from website
+from website import urls as website_urls
+
+# Override to put website routes first
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('studio/', include(('studio.urls', 'studio'), namespace='studio')),
+]
+urlpatterns += website_urls.urlpatterns
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

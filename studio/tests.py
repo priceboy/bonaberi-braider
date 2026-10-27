@@ -64,33 +64,33 @@ class StyleImageTests(TestCase):
 
 class HomeViewTests(TestCase):
     def test_home_renders(self):
-        response = self.client.get(reverse("home"))
+        response = self.client.get(reverse("studio:home"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Phanie Magic Touch")
         self.assertContains(response, "Sculpted Knotless Braids")
 
     def test_home_includes_categories(self):
-        response = self.client.get(reverse("home"))
+        response = self.client.get(reverse("studio:home"))
         for category in ["Braids", "Locs", "Twists", "Wigs", "Natural Hair", "Other"]:
             self.assertContains(response, category)
 
     def test_unpublished_styles_hidden(self):
         Hairstyle.objects.update(published=False)
-        response = self.client.get(reverse("home"))
+        response = self.client.get(reverse("studio:home"))
         self.assertNotContains(response, "Sculpted Knotless Braids")
 
     def test_photo_count_badge_shown_for_multi_photo_styles(self):
         style = Hairstyle.objects.get(slug="crown-loc-style")
         StyleImage.objects.create(hairstyle=style, image_url="https://example.com/a.jpg")
         StyleImage.objects.create(hairstyle=style, image_url="https://example.com/b.jpg")
-        response = self.client.get(reverse("home"))
+        response = self.client.get(reverse("studio:home"))
         self.assertContains(response, "3 photos")
 
 
 class StyleDetailViewTests(TestCase):
     def test_detail_renders(self):
         style = Hairstyle.objects.get(slug="sculpted-knotless-braids")
-        response = self.client.get(reverse("style_detail", args=[style.slug]))
+        response = self.client.get(reverse("studio:style_detail", args=[style.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, style.title)
 
@@ -98,7 +98,7 @@ class StyleDetailViewTests(TestCase):
         style = Hairstyle.objects.get(slug="crown-loc-style")
         StyleImage.objects.create(hairstyle=style, image_url="https://example.com/a.jpg")
         StyleImage.objects.create(hairstyle=style, image_url="https://example.com/b.jpg")
-        response = self.client.get(reverse("style_detail", args=[style.slug]))
+        response = self.client.get(reverse("studio:style_detail", args=[style.slug]))
         self.assertContains(response, "https://example.com/a.jpg")
         self.assertContains(response, "https://example.com/b.jpg")
         self.assertContains(response, "1 / 3")
@@ -107,5 +107,5 @@ class StyleDetailViewTests(TestCase):
         style = Hairstyle.objects.get(slug="sculpted-knotless-braids")
         style.published = False
         style.save()
-        response = self.client.get(reverse("style_detail", args=[style.slug]))
+        response = self.client.get(reverse("studio:style_detail", args=[style.slug]))
         self.assertEqual(response.status_code, 404)

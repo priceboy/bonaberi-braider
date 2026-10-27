@@ -1,16 +1,36 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Phanie Magic Touch | Hair artistry{% endblock %}</title>
-  <meta name="description" content="{% block description %}Luxury hair artistry in Douala, Cameroon.{% endblock %}">
-  {% block extra_head %}{% endblock %}
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}Phanie Magic Touch{% endblock %}</title>
+    <meta name="description" content="{% block description %}Luxury salon website{% endblock %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'website/css/base.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
-{% block body %}{% endblock %}
-<script src="{% static 'js/app.js' %}" defer></script>
+<body class="{% block body_class %}{% endblock %}">
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav__inner">
+            <a href="{% url 'home' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'our_work' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'our_work' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'our_work' %}aria-current="page"{% endif %}>
+                <span>Our Work</span>
+            </a>
+            <a href="{% url 'find_us' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'find_us' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'find_us' %}aria-current="page"{% endif %}>
+                <span>How to Find Us</span>
+            </a>
+        </div>
+    </nav>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
