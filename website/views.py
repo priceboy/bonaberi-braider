@@ -26,7 +26,7 @@ def home(request):
             "site_config": config,
             "portraits": portraits,
             "home_bg_placeholder": not bool(config and config.home_background),
-            "booking_url": config.booking_url if config else "",
+            "booking_url": (config.booking_url or "https://wa.me/237672748984") if config else "https://wa.me/237672748984",
             "salon_name": config.salon_name if config and config.salon_name else "",
             "tagline": config.tagline if config and config.tagline else "",
             "hero_title": config.hero_title if config and config.hero_title else "",
