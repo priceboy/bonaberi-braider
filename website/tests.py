@@ -57,7 +57,7 @@ class PublicPageTests(TestCase):
 
 class HairstyleModelTests(TestCase):
     def setUp(self):
-        self.category = Category.objects.create(name="Braids")
+        self.category, _ = Category.objects.get_or_create(name="Braids")
 
     def test_category_slug_is_generated(self):
         self.assertEqual(self.category.slug, "braids")
