@@ -15,6 +15,7 @@
         <p class="our-work__subtitle">
             A curated study of texture, structure, and movement. Each look is considered with restraint and finished with precision.
         </p>
+        <p class="demo-disclaimer">Demo gallery: these stock photos are temporary placeholders, not verified salon work.</p>
     </header>
 
     {% if carousel_items %}
@@ -50,6 +51,7 @@
                 <div class="gallery__overlay">
                     <span class="gallery__category">{{ item.category.name }}</span>
                     {% if item.title %}<span class="gallery__item-title">{{ item.title }}</span>{% endif %}
+                    {% if item.is_demo %}<span class="gallery__demo-tag">Demo photo</span>{% endif %}
                 </div>
             </button>
             {% endfor %}
