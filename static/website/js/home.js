@@ -3,9 +3,7 @@
     if (portraits.length < 2) return;
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mediaQuery.matches) return;
-
-    let current = 0;
+    let current = Math.max(0, portraits.findIndex((portrait) => portrait.classList.contains("is-active")));
     let intervalId = null;
     const interval = 3200;
 
@@ -16,33 +14,30 @@
         }
     }
 
+    function showCurrentPortrait() {
+        portraits.forEach((portrait, index) => {
+            portrait.classList.toggle("is-active", index === current);
+        });
+    }
+
     function startRotation() {
         if (intervalId !== null || document.hidden || mediaQuery.matches) return;
         intervalId = window.setInterval(() => {
-            portraits[current].classList.remove("is-active");
             current = (current + 1) % portraits.length;
-            portraits[current].classList.add("is-active");
+            showCurrentPortrait();
         }, interval);
     }
 
     document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-            stopRotation();
-        } else {
-            startRotation();
-        }
+        if (document.hidden) stopRotation();
+        else startRotation();
     });
 
     mediaQuery.addEventListener?.("change", () => {
-        if (mediaQuery.matches) {
-            stopRotation();
-            portraits.forEach((portrait, index) => {
-                portrait.classList.toggle("is-active", index === current);
-            });
-        } else {
-            startRotation();
-        }
+        if (mediaQuery.matches) stopRotation();
+        else startRotation();
     });
 
+    showCurrentPortrait();
     startRotation();
 })();
