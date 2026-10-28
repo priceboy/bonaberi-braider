@@ -17,19 +17,28 @@
     let visualOrder = [...items];
     let carouselTimer = null;
 
+    const carousel = document.querySelector(".carousel");
+    let carouselPaused = false;
+    let resizeFrame = null;
+
     function positionCarousel() {
         if (!track || !items.length) return;
         const mobile = window.innerWidth < 640;
-        const cardWidth = mobile ? 104 : Math.min(158, Math.max(104, window.innerWidth * 0.13));
         const gap = mobile ? 14 : 10;
-        const desiredWidth = items.length * cardWidth + Math.max(0, items.length - 1) * gap;
+        const desiredMobileWidth = items.length * 104 + Math.max(0, items.length - 1) * gap;
         const stageWidth = mobile
-            ? Math.max(window.innerWidth * 0.92, desiredWidth)
-            : Math.min(1100, Math.max(window.innerWidth * 0.92, desiredWidth));
+            ? Math.max(window.innerWidth * 0.92, desiredMobileWidth)
+            : Math.min(1100, Math.max(window.innerWidth * 0.92, desiredMobileWidth));
         const stage = document.getElementById("carouselStage");
-        if (stage) stage.style.width = stageWidth + "px";
         const stageHeight = mobile ? 250 : Math.min(320, Math.max(250, window.innerWidth * 0.30));
-        if (stage) stage.style.height = stageHeight + "px";
+        const cardWidth = mobile
+            ? 104
+            : Math.min(158, Math.max(78, (stageWidth - gap * (items.length - 1)) / items.length));
+
+        if (stage) {
+            stage.style.width = stageWidth + "px";
+            stage.style.height = stageHeight + "px";
+        }
         track.style.width = stageWidth + "px";
         track.style.height = stageHeight + "px";
 
@@ -37,9 +46,10 @@
         const center = (visualOrder.length - 1) / 2;
         visualOrder.forEach((item, index) => {
             const distance = center === 0 ? 0 : Math.abs(index - center) / center;
-            const left = slotWidth * (index + 0.5);
+            const centerX = slotWidth * (index + 0.5);
             const top = 12 + distance * distance * (mobile ? 34 : 58);
-            item.style.setProperty("--left", left + "px");
+            item.style.setProperty("--card-width", cardWidth + "px");
+            item.style.setProperty("--offset-x", (centerX - stageWidth / 2) + "px");
             item.style.setProperty("--top", top + "px");
             item.style.zIndex = String(100 - Math.round(distance * 10));
         });
@@ -51,25 +61,57 @@
     }
 
     function rotateCarousel() {
-        if (visualOrder.length < 2) return;
+        if (visualOrder.length < 2 || carouselPaused || document.hidden || reduceMotion.matches) return;
         visualOrder.push(visualOrder.shift());
         positionCarousel();
     }
 
-    positionCarousel();
-    window.addEventListener("resize", positionCarousel, { passive: true });
-    if (!reduceMotion.matches && items.length > 1) {
-        carouselTimer = window.setInterval(rotateCarousel, 3200);
-        const carousel = document.querySelector(".carousel");
-        carousel?.addEventListener("mouseenter", () => window.clearInterval(carouselTimer));
-        carousel?.addEventListener("mouseleave", () => {
-            if (!reduceMotion.matches) carouselTimer = window.setInterval(rotateCarousel, 3200);
-        });
-        carousel?.addEventListener("focusin", () => window.clearInterval(carouselTimer));
-        carousel?.addEventListener("focusout", () => {
-            if (!reduceMotion.matches) carouselTimer = window.setInterval(rotateCarousel, 3200);
-        });
+    function stopCarouselTimer() {
+        if (carouselTimer !== null) {
+            window.clearInterval(carouselTimer);
+            carouselTimer = null;
+        }
     }
+
+    function startCarouselTimer() {
+        if (carouselTimer !== null || carouselPaused || document.hidden || reduceMotion.matches || items.length < 2) return;
+        carouselTimer = window.setInterval(rotateCarousel, 3200);
+    }
+
+    function pauseCarousel() {
+        carouselPaused = true;
+        stopCarouselTimer();
+    }
+
+    function resumeCarousel() {
+        carouselPaused = false;
+        startCarouselTimer();
+    }
+
+    positionCarousel();
+    window.addEventListener("resize", () => {
+        if (resizeFrame !== null) window.cancelAnimationFrame(resizeFrame);
+        resizeFrame = window.requestAnimationFrame(() => {
+            resizeFrame = null;
+            positionCarousel();
+        });
+    }, { passive: true });
+
+    carousel?.addEventListener("mouseenter", pauseCarousel);
+    carousel?.addEventListener("mouseleave", resumeCarousel);
+    carousel?.addEventListener("focusin", pauseCarousel);
+    carousel?.addEventListener("focusout", (event) => {
+        if (!carousel.contains(event.relatedTarget)) resumeCarousel();
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopCarouselTimer();
+        else startCarouselTimer();
+    });
+    reduceMotion.addEventListener?.("change", () => {
+        if (reduceMotion.matches) stopCarouselTimer();
+        else startCarouselTimer();
+    });
+    startCarouselTimer();
 
     let currentList = [];
     let currentIndex = 0;
