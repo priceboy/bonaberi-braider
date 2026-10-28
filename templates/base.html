@@ -17,10 +17,10 @@
         {% block content %}{% endblock %}
     </main>
 
-    {% if site_config and site_config.booking_url %}
+    {% if not site_config or site_config.booking_url %}
     <a
         class="floating-booking"
-        href="{{ site_config.booking_url }}"
+        href="{% if site_config and site_config.booking_url %}{{ site_config.booking_url }}{% else %}https://wa.me/237672748984{% endif %}"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Book an appointment on WhatsApp"
