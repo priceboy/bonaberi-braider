@@ -45,10 +45,10 @@
 .carousel__item {
     position: absolute;
     left: 50%;
-    top: var(--top, 35px);
+    top: 0;
     width: var(--card-width, clamp(104px, 13vw, 158px));
-    height: clamp(145px, 18vw, 205px);
-    transform: translate3d(calc(-50% + var(--offset-x, 0px)), 0, 0);
+    height: var(--card-height, clamp(145px, 18vw, 205px));
+    transform: translate3d(calc(-50% + var(--offset-x, 0px)), var(--offset-y, 12px), 0);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -57,8 +57,8 @@
     background: transparent;
     cursor: pointer;
     padding: 0;
-    transition: transform 700ms cubic-bezier(.2,.75,.25,1), top 700ms cubic-bezier(.2,.75,.25,1);
-    will-change: transform, top;
+    transition: transform 700ms cubic-bezier(.2,.75,.25,1);
+    will-change: transform;
 }
 .carousel__item:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 .carousel__image {
