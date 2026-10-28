@@ -52,6 +52,16 @@ content straight from the database.
 python manage.py test
 ```
 
+## Demo portfolio images
+
+The `website` app seeds six clearly labelled demo hairstyles during migrations so
+the Home and Our Work pages are populated for previews. These are remote stock
+photos from Unsplash, not photos of verified salon work. They require an internet
+connection and can be replaced in Django Admin by uploading the salon's actual
+image; uploaded images take priority over the demo URL. Filter hairstyles by
+**Demo** in Admin to identify temporary entries. Replace the demo photos and
+untick **Is demo** before presenting the portfolio as the salon's own work.
+
 ## Data model
 
 - `BusinessProfile` — single-row store for studio name, hero copy, WhatsApp

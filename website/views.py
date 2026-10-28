@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 
 from .models import Category, DirectionStep, Hairstyle, SiteConfiguration
@@ -8,8 +9,8 @@ def site_configuration():
 
 
 def with_images(queryset):
-    """Only send image-backed records to templates that render an <img>."""
-    return queryset.filter(image__gt="")
+    """Only send records with uploaded or remote demo images to image templates."""
+    return queryset.filter(Q(image__gt="") | Q(image_url__gt=""))
 
 
 def home(request):

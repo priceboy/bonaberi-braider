@@ -6,15 +6,25 @@ from .models import Category, Hairstyle, SiteConfiguration
 
 
 class PublicPageTests(TestCase):
-    def test_home_renders_without_uploaded_assets_or_fake_identity(self):
+    def test_home_renders_seeded_demo_portraits(self):
         response = self.client.get(reverse("website:home"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Book on WhatsApp")
         self.assertContains(response, "https://wa.me/237672748984")
         self.assertContains(response, "Salon name to be confirmed")
+        self.assertContains(response, "Sculpted Knotless Braids")
+        self.assertContains(response, "Demo photo")
         self.assertNotContains(response, 'href="#"')
 
-    def test_work_page_renders_with_empty_gallery(self):
+    def test_work_page_renders_demo_gallery(self):
+        response = self.client.get(reverse("website:our_work"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Demo gallery")
+        self.assertContains(response, "Sculpted Knotless Braids")
+        self.assertContains(response, "data-gallery-item")
+
+    def test_work_page_renders_empty_gallery_when_no_images_exist(self):
+        Hairstyle.objects.all().delete()
         response = self.client.get(reverse("website:our_work"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The gallery will appear")
@@ -47,7 +57,7 @@ class PublicPageTests(TestCase):
 
 class HairstyleModelTests(TestCase):
     def setUp(self):
-        self.category = Category.objects.create(name="Braids")
+        self.category, _ = Category.objects.get_or_create(name="Braids")
 
     def test_category_slug_is_generated(self):
         self.assertEqual(self.category.slug, "braids")
@@ -58,26 +68,33 @@ class HairstyleModelTests(TestCase):
 
     def test_uploaded_image_url_is_available(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
-
         style = Hairstyle.objects.create(
-            title="Knotless braids",
-            category=self.category,
+            title="Knotless braids", category=self.category,
             image=SimpleUploadedFile("style.jpg", b"test-image", content_type="image/jpeg"),
         )
         self.assertTrue(style.display_image().endswith("style.jpg"))
 
-    def test_home_selection_validation_rejects_seventh_active_style(self):
-        for index in range(6):
-            Hairstyle.objects.create(
-                title=f"Style {index}",
-                category=self.category,
-                show_on_home=True,
-            )
-        seventh = Hairstyle(
-            title="Style 7",
-            category=self.category,
-            show_on_home=True,
+    def test_demo_image_url_is_used_when_no_upload_exists(self):
+        style = Hairstyle.objects.create(
+            title="Demo braid", category=self.category,
+            image_url="https://images.unsplash.com/example.jpg", is_demo=True,
         )
+        self.assertEqual(style.display_image(), "https://images.unsplash.com/example.jpg")
+
+    def test_uploaded_image_takes_priority_over_demo_url(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        style = Hairstyle.objects.create(
+            title="Uploaded braid", category=self.category,
+            image=SimpleUploadedFile("real.jpg", b"test-image", content_type="image/jpeg"),
+            image_url="https://images.unsplash.com/example.jpg", is_demo=True,
+        )
+        self.assertTrue(style.display_image().endswith("real.jpg"))
+
+    def test_home_selection_validation_rejects_seventh_active_style(self):
+        Hairstyle.objects.all().delete()
+        for index in range(6):
+            Hairstyle.objects.create(title=f"Style {index}", category=self.category, show_on_home=True)
+        seventh = Hairstyle(title="Style 7", category=self.category, show_on_home=True)
         with self.assertRaises(ValidationError):
             seventh.full_clean()
 

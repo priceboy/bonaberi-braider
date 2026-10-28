@@ -30,6 +30,7 @@
             {% for portrait in portraits %}
             <figure class="home-portrait{% if forloop.first %} is-active{% endif %}" data-portrait>
                 <img src="{{ portrait.display_image }}" alt="{{ portrait.title|default:'Client hairstyle cutout' }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                {% if portrait.is_demo %}<figcaption class="demo-image-label">Demo photo</figcaption>{% endif %}
             </figure>
             {% endfor %}
         {% else %}
