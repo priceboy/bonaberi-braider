@@ -198,3 +198,20 @@
 @media (prefers-reduced-motion: reduce) {
     .carousel__track, .carousel__image { animation: none; }
 }
+
+
+.demo-disclaimer {
+    margin-top: 1rem;
+    font-size: .78rem;
+    opacity: .72;
+}
+.gallery__demo-tag {
+    display: inline-block;
+    margin-top: .35rem;
+    padding: .22rem .45rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: .62rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
