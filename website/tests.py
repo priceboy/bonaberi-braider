@@ -9,7 +9,7 @@ class PublicPageTests(TestCase):
     def test_home_renders_without_uploaded_assets_or_fake_identity(self):
         response = self.client.get(reverse("website:home"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Booking details coming soon")
+        self.assertNotContains(response, "Book on WhatsApp")
         self.assertContains(response, "Salon name to be confirmed")
         self.assertNotContains(response, 'href="#"')
 
@@ -37,6 +37,8 @@ class PublicPageTests(TestCase):
         find_us = self.client.get(reverse("website:find_us"))
         self.assertContains(home, "Confirmed Salon")
         self.assertContains(home, "https://example.com/book")
+        self.assertContains(home, "Book on WhatsApp")
+        self.assertContains(home, "floating-booking")
         self.assertContains(find_us, "Owner-supplied address")
         self.assertContains(find_us, "https://maps.google.com/?q=example")
         self.assertFalse(find_us.context["location_configured"])
