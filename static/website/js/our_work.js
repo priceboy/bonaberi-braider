@@ -14,24 +14,106 @@
     const carouselTitle = document.getElementById("carouselTitle");
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visualOrder = [...items];
+    let carouselTimer = null;
+
+    const carousel = document.querySelector(".carousel");
+    let carouselPaused = false;
+    let resizeFrame = null;
+
     function positionCarousel() {
         if (!track || !items.length) return;
-        const radius = window.innerWidth < 640 ? Math.min(128, window.innerWidth * 0.28) : window.innerWidth < 900 ? 150 : 190;
-        items.forEach((item, index) => {
-            const ratio = items.length === 1 ? 0.5 : index / (items.length - 1);
-            const angle = -90 + ratio * 180;
-            item.style.setProperty("--angle", angle + "deg");
-            item.style.setProperty("--radius", radius + "px");
-        });
-    }
-    positionCarousel();
-    window.addEventListener("resize", positionCarousel, { passive: true });
-    if (reduceMotion.matches && track) track.style.animation = "none";
+        const mobile = window.innerWidth < 640;
+        const gap = mobile ? 14 : 10;
+        const desiredMobileWidth = items.length * 104 + Math.max(0, items.length - 1) * gap;
+        const stageWidth = mobile
+            ? Math.max(window.innerWidth * 0.92, desiredMobileWidth)
+            : Math.min(1100, Math.max(window.innerWidth * 0.92, desiredMobileWidth));
+        const stage = document.getElementById("carouselStage");
+        const stageHeight = mobile ? 250 : Math.min(320, Math.max(250, window.innerWidth * 0.30));
+        const cardWidth = mobile
+            ? 104
+            : Math.min(158, Math.max(78, (stageWidth - gap * (items.length - 1)) / items.length));
+        const cardHeight = mobile ? 148 : Math.min(205, Math.max(112, cardWidth * 1.3));
 
-    if (items.length && carouselCategory && carouselTitle) {
-        carouselCategory.textContent = items[0].dataset.category || "";
-        carouselTitle.textContent = items[0].dataset.title || "";
+        if (stage) {
+            stage.style.width = stageWidth + "px";
+            stage.style.height = stageHeight + "px";
+        }
+        track.style.width = stageWidth + "px";
+        track.style.height = stageHeight + "px";
+
+        const slotWidth = stageWidth / visualOrder.length;
+        const center = (visualOrder.length - 1) / 2;
+        visualOrder.forEach((item, index) => {
+            const distance = center === 0 ? 0 : Math.abs(index - center) / center;
+            const centerX = slotWidth * (index + 0.5);
+            const arcOffsetY = 12 + distance * distance * (mobile ? 34 : 58);
+            item.style.setProperty("--card-width", cardWidth + "px");
+            item.style.setProperty("--card-height", cardHeight + "px");
+            item.style.setProperty("--offset-x", (centerX - stageWidth / 2) + "px");
+            item.style.setProperty("--offset-y", arcOffsetY + "px");
+            item.style.zIndex = String(100 - Math.round(distance * 10));
+        });
+        if (carouselCategory && carouselTitle) {
+            const middle = visualOrder[Math.floor(visualOrder.length / 2)];
+            carouselCategory.textContent = middle?.dataset.category || "";
+            carouselTitle.textContent = middle?.dataset.title || "";
+        }
     }
+
+    function rotateCarousel() {
+        if (visualOrder.length < 2 || carouselPaused || document.hidden || reduceMotion.matches) return;
+        visualOrder.push(visualOrder.shift());
+        positionCarousel();
+    }
+
+    function stopCarouselTimer() {
+        if (carouselTimer !== null) {
+            window.clearInterval(carouselTimer);
+            carouselTimer = null;
+        }
+    }
+
+    function startCarouselTimer() {
+        if (carouselTimer !== null || carouselPaused || document.hidden || reduceMotion.matches || items.length < 2) return;
+        carouselTimer = window.setInterval(rotateCarousel, 3200);
+    }
+
+    function pauseCarousel() {
+        carouselPaused = true;
+        stopCarouselTimer();
+    }
+
+    function resumeCarousel() {
+        carouselPaused = false;
+        startCarouselTimer();
+    }
+
+    positionCarousel();
+    window.addEventListener("resize", () => {
+        if (resizeFrame !== null) window.cancelAnimationFrame(resizeFrame);
+        resizeFrame = window.requestAnimationFrame(() => {
+            resizeFrame = null;
+            positionCarousel();
+        });
+    }, { passive: true });
+
+    carousel?.addEventListener("mouseenter", pauseCarousel);
+    carousel?.addEventListener("mouseleave", resumeCarousel);
+    carousel?.addEventListener("focusin", pauseCarousel);
+    carousel?.addEventListener("focusout", (event) => {
+        if (!carousel.contains(event.relatedTarget)) resumeCarousel();
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopCarouselTimer();
+        else startCarouselTimer();
+    });
+    reduceMotion.addEventListener?.("change", () => {
+        if (reduceMotion.matches) stopCarouselTimer();
+        else startCarouselTimer();
+    });
+    startCarouselTimer();
 
     let currentList = [];
     let currentIndex = 0;
