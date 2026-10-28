@@ -23,13 +23,6 @@
     <div class="home-copy">
         <h1 class="home-headline">{% if hero_title %}{{ hero_title|linebreaksbr }}{% else %}Hair artistry{% endif %}</h1>
         <p class="home-text">{% if hero_text %}{{ hero_text }}{% else %}Salon story and service details will appear here once confirmed.{% endif %}</p>
-        {% if booking_url %}
-        <a class="home-cta" href="{{ booking_url }}">
-            Book an Appointment <span aria-hidden="true">→</span>
-        </a>
-        {% else %}
-        <p class="home-cta home-cta--disabled" aria-label="Booking link not configured">Booking details coming soon</p>
-        {% endif %}
     </div>
 
     <div class="home-portraits{% if portraits|length == 0 %} home-portraits--empty{% endif %}" id="homePortraits" data-count="{{ portraits|length }}">
