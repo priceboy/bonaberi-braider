@@ -16,7 +16,12 @@ class SiteConfiguration(models.Model):
     )
     booking_url = models.URLField(
         blank=True, default="",
-        help_text="Real booking/contact destination. Leave blank until confirmed.",
+        verbose_name="WhatsApp booking link",
+        help_text=(
+            "Use a WhatsApp click-to-chat URL, e.g. https://wa.me/237XXXXXXXXX "
+            "(international number, digits only; no +, spaces, or dashes). "
+            "Leave blank until the salon's number is confirmed."
+        ),
     )
     address = models.CharField(max_length=250, blank=True, default="")
     map_embed_url = models.URLField(
