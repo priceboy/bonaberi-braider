@@ -14,23 +14,61 @@
     const carouselTitle = document.getElementById("carouselTitle");
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visualOrder = [...items];
+    let carouselTimer = null;
+
     function positionCarousel() {
         if (!track || !items.length) return;
-        const radius = window.innerWidth < 640 ? Math.min(128, window.innerWidth * 0.28) : window.innerWidth < 900 ? 150 : 190;
-        items.forEach((item, index) => {
-            const ratio = items.length === 1 ? 0.5 : index / (items.length - 1);
-            const angle = -90 + ratio * 180;
-            item.style.setProperty("--angle", angle + "deg");
-            item.style.setProperty("--radius", radius + "px");
+        const mobile = window.innerWidth < 640;
+        const cardWidth = mobile ? 104 : Math.min(158, Math.max(104, window.innerWidth * 0.13));
+        const gap = mobile ? 14 : 10;
+        const desiredWidth = items.length * cardWidth + Math.max(0, items.length - 1) * gap;
+        const stageWidth = mobile
+            ? Math.max(window.innerWidth * 0.92, desiredWidth)
+            : Math.min(1100, Math.max(window.innerWidth * 0.92, desiredWidth));
+        const stage = document.getElementById("carouselStage");
+        if (stage) stage.style.width = stageWidth + "px";
+        const stageHeight = mobile ? 250 : Math.min(320, Math.max(250, window.innerWidth * 0.30));
+        if (stage) stage.style.height = stageHeight + "px";
+        track.style.width = stageWidth + "px";
+        track.style.height = stageHeight + "px";
+
+        const slotWidth = stageWidth / visualOrder.length;
+        const center = (visualOrder.length - 1) / 2;
+        visualOrder.forEach((item, index) => {
+            const distance = center === 0 ? 0 : Math.abs(index - center) / center;
+            const left = slotWidth * (index + 0.5);
+            const top = 12 + distance * distance * (mobile ? 34 : 58);
+            item.style.setProperty("--left", left + "px");
+            item.style.setProperty("--top", top + "px");
+            item.style.zIndex = String(100 - Math.round(distance * 10));
         });
+        if (carouselCategory && carouselTitle) {
+            const middle = visualOrder[Math.floor(visualOrder.length / 2)];
+            carouselCategory.textContent = middle?.dataset.category || "";
+            carouselTitle.textContent = middle?.dataset.title || "";
+        }
     }
+
+    function rotateCarousel() {
+        if (visualOrder.length < 2) return;
+        visualOrder.push(visualOrder.shift());
+        positionCarousel();
+    }
+
     positionCarousel();
     window.addEventListener("resize", positionCarousel, { passive: true });
-    if (reduceMotion.matches && track) track.style.animation = "none";
-
-    if (items.length && carouselCategory && carouselTitle) {
-        carouselCategory.textContent = items[0].dataset.category || "";
-        carouselTitle.textContent = items[0].dataset.title || "";
+    if (!reduceMotion.matches && items.length > 1) {
+        carouselTimer = window.setInterval(rotateCarousel, 3200);
+        const carousel = document.querySelector(".carousel");
+        carousel?.addEventListener("mouseenter", () => window.clearInterval(carouselTimer));
+        carousel?.addEventListener("mouseleave", () => {
+            if (!reduceMotion.matches) carouselTimer = window.setInterval(rotateCarousel, 3200);
+        });
+        carousel?.addEventListener("focusin", () => window.clearInterval(carouselTimer));
+        carousel?.addEventListener("focusout", () => {
+            if (!reduceMotion.matches) carouselTimer = window.setInterval(rotateCarousel, 3200);
+        });
     }
 
     let currentList = [];
