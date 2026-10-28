@@ -81,7 +81,15 @@ class Hairstyle(models.Model):
     )
     image = models.ImageField(
         upload_to="hairstyles/", blank=True, null=True,
-        help_text="Upload genuine salon work. Transparent PNG/WebP recommended for Home cutouts.",
+        help_text="Upload the salon's real photo to replace any demo image.",
+    )
+    image_url = models.URLField(
+        blank=True, default="",
+        help_text="Optional remote demo photo. An uploaded image takes priority.",
+    )
+    is_demo = models.BooleanField(
+        default=False,
+        help_text="Demo entries use stock photos. Uncheck this when replacing with real salon work.",
     )
     description = models.CharField(max_length=300, blank=True, default="")
     show_on_home = models.BooleanField(default=False)
@@ -97,7 +105,9 @@ class Hairstyle(models.Model):
         return self.title
 
     def display_image(self):
-        return self.image.url if self.image else ""
+        if self.image:
+            return self.image.url
+        return self.image_url or ""
 
     def clean(self):
         super().clean()
