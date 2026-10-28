@@ -41,6 +41,13 @@ def remove_demo_styles(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [("website", "0006_configure_whatsapp_booking")]
     operations = [
+        migrations.AlterField(
+            model_name="hairstyle", name="image",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="hairstyles/",
+                help_text="Upload the salon's real photo to replace any demo image.",
+            ),
+        ),
         migrations.AddField(
             model_name="hairstyle", name="image_url",
             field=models.URLField(blank=True, default="", help_text="Optional remote demo photo. An uploaded image takes priority."),
