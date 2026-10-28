@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Our Work | Phanie Magic Touch{% endblock %}
+{% block title %}{% if site_config and site_config.salon_name %}Our Work | {{ site_config.salon_name }}{% else %}Our Work | Salon{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'website/css/our_work.css' %}">
@@ -22,8 +22,8 @@
         <div class="carousel__stage" id="carouselStage">
             <div class="carousel__track" id="carouselTrack">
                 {% for item in carousel_items %}
-                <button class="carousel__item" data-carousel-item data-id="{{ item.id }}" data-category="{{ item.category.name }}" data-title="{{ item.title }}" data-src="{{ item.image.url }}" style="--angle: {{ forloop.counter0|add:0 }}deg; --radius: clamp(150px, 22vw, 190px);">
-                    <img class="carousel__image" src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+                <button class="carousel__item" type="button" data-carousel-item data-id="{{ item.id }}" data-category="{{ item.category.name }}" data-title="{{ item.title }}" data-src="{{ item.display_image }}" style="--angle: {{ forloop.counter0|add:0 }}deg; --radius: clamp(150px, 22vw, 190px);" aria-label="View {{ item.title }}">
+                    <img class="carousel__image" src="{{ item.display_image }}" alt="{{ item.title }}" loading="lazy">
                 </button>
                 {% endfor %}
             </div>
@@ -34,7 +34,7 @@
         </div>
     </section>
     {% else %}
-    <p class="our-work__subtitle">Carousel items will appear once hairstyles are marked "Show in carousel" in Admin.</p>
+    <p class="our-work__subtitle">Carousel items will appear once active hairstyles with images are marked "Show in carousel" in Admin.</p>
     {% endif %}
 
     <section class="gallery">
@@ -45,8 +45,8 @@
         {% if gallery_items %}
         <div class="gallery__grid" id="galleryGrid">
             {% for item in gallery_items %}
-            <button class="gallery__item" data-gallery-item data-id="{{ item.id }}" data-category="{{ item.category.name }}" data-title="{{ item.title }}" data-src="{{ item.image.url }}">
-                <img class="gallery__image" src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+            <button class="gallery__item" type="button" data-gallery-item data-id="{{ item.id }}" data-category="{{ item.category.name }}" data-title="{{ item.title }}" data-src="{{ item.display_image }}" aria-label="View {{ item.title }}">
+                <img class="gallery__image" src="{{ item.display_image }}" alt="{{ item.title }}" loading="lazy">
                 <div class="gallery__overlay">
                     <span class="gallery__category">{{ item.category.name }}</span>
                     {% if item.title %}<span class="gallery__item-title">{{ item.title }}</span>{% endif %}
@@ -55,31 +55,31 @@
             {% endfor %}
         </div>
         {% else %}
-        <p class="our-work__subtitle">Gallery will populate once active hairstyles are added.</p>
+        <p class="our-work__subtitle">The gallery will appear once active hairstyle images are added in Admin.</p>
         {% endif %}
     </section>
 </section>
 
-<div class="viewer" id="imageViewer" aria-modal="true" role="dialog">
+<div class="viewer" id="imageViewer" aria-modal="true" role="dialog" aria-label="Hairstyle photo viewer" aria-hidden="true">
     <div class="viewer__header">
         <div class="viewer__meta">
             <span class="viewer__category" id="viewerCategory">—</span>
-            <span class="viewer__counter" id="viewerCounter">1 of 1</span>
+            <span class="viewer__counter" id="viewerCounter" aria-live="polite">1 of 1</span>
         </div>
-        <button class="viewer__close" id="viewerClose" aria-label="Close viewer">
+        <button class="viewer__close" id="viewerClose" type="button" aria-label="Close viewer">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
             </svg>
         </button>
     </div>
     <div class="viewer__body">
-        <button class="viewer__nav viewer__nav--prev" id="viewerPrev" aria-label="Previous image">
+        <button class="viewer__nav viewer__nav--prev" id="viewerPrev" type="button" aria-label="Previous image">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M11 4L6 9L11 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-        <img class="viewer__image" id="viewerImage" src="" alt="">
-        <button class="viewer__nav viewer__nav--next" id="viewerNext" aria-label="Next image">
+        <img class="viewer__image" id="viewerImage" alt="">
+        <button class="viewer__nav viewer__nav--next" id="viewerNext" type="button" aria-label="Next image">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7 4L12 9L7 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>

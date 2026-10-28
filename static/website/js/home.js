@@ -1,28 +1,48 @@
 (function () {
-    const portraits = Array.from(document.querySelectorAll('[data-portrait]'));
-    if (portraits.length === 0) {
-        return;
-    }
+    const portraits = Array.from(document.querySelectorAll("[data-portrait]"));
+    if (portraits.length < 2) return;
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-        // Keep only the first visible
-        portraits.forEach((el, idx) => {
-            if (idx !== 0) {
-                el.classList.remove('is-active');
-            } else {
-                el.classList.add('is-active');
-            }
-        });
-        return;
-    }
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) return;
 
     let current = 0;
+    let intervalId = null;
     const interval = 3200;
 
-    setInterval(() => {
-        portraits[current].classList.remove('is-active');
-        current = (current + 1) % portraits.length;
-        portraits[current].classList.add('is-active');
-    }, interval);
+    function stopRotation() {
+        if (intervalId !== null) {
+            window.clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    function startRotation() {
+        if (intervalId !== null || document.hidden || mediaQuery.matches) return;
+        intervalId = window.setInterval(() => {
+            portraits[current].classList.remove("is-active");
+            current = (current + 1) % portraits.length;
+            portraits[current].classList.add("is-active");
+        }, interval);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            stopRotation();
+        } else {
+            startRotation();
+        }
+    });
+
+    mediaQuery.addEventListener?.("change", () => {
+        if (mediaQuery.matches) {
+            stopRotation();
+            portraits.forEach((portrait, index) => {
+                portrait.classList.toggle("is-active", index === current);
+            });
+        } else {
+            startRotation();
+        }
+    });
+
+    startRotation();
 })();

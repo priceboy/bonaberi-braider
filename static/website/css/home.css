@@ -1,6 +1,7 @@
 /* Home Page */
 .home-page {
     position: relative;
+    isolation: isolate;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -14,7 +15,9 @@
     z-index: -2;
     background: radial-gradient(circle at top, rgba(185, 160, 126, 0.18), transparent 55%),
                 linear-gradient(180deg, rgba(15, 13, 11, 0.4) 0%, rgba(15, 13, 11, 0.92) 100%),
-                url('{% if bg_image %}{{ bg_image }}{% else %}#{% endif %}') center/cover no-repeat;
+                repeating-linear-gradient(45deg, rgba(185, 160, 126, 0.08) 0 12px, transparent 12px 24px);
+    background-size: cover;
+    background-position: center;
 }
 
 .home-bg--placeholder {
@@ -73,11 +76,6 @@
     text-transform: uppercase;
 }
 
-.home-headline em {
-    font-style: normal;
-    display: block;
-}
-
 .home-text {
     color: var(--text-secondary);
     max-width: 380px;
@@ -92,7 +90,7 @@
     border-radius: 999px;
     border: 1px solid var(--accent);
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     font-size: 0.78rem;
     transition: background 200ms ease, color 200ms ease;
 }
@@ -100,6 +98,17 @@
 .home-cta:hover {
     background: var(--accent);
     color: var(--bg);
+}
+
+.home-cta--disabled {
+    color: var(--text-secondary);
+    border-color: var(--border);
+    cursor: default;
+}
+
+.home-cta--disabled:hover {
+    background: transparent;
+    color: var(--text-secondary);
 }
 
 .home-portraits {
@@ -118,6 +127,7 @@
     justify-content: flex-end;
     opacity: 0;
     transition: opacity 900ms ease-in-out;
+    pointer-events: none;
 }
 
 .home-portrait.is-active {
@@ -149,9 +159,7 @@
         grid-template-columns: minmax(0, 1fr) minmax(0, auto);
         align-items: end;
     }
-    .home-portraits {
-        justify-self: end;
-    }
+    .home-portraits { justify-self: end; }
 }
 
 @media (max-width: 720px) {
@@ -166,7 +174,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .home-portrait {
-        transition: none;
-    }
+    .home-portrait { transition: none; }
 }
