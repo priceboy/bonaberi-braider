@@ -34,6 +34,7 @@
         const cardWidth = mobile
             ? 104
             : Math.min(158, Math.max(78, (stageWidth - gap * (items.length - 1)) / items.length));
+        const cardHeight = mobile ? 148 : Math.min(205, Math.max(112, cardWidth * 1.3));
 
         if (stage) {
             stage.style.width = stageWidth + "px";
@@ -47,10 +48,11 @@
         visualOrder.forEach((item, index) => {
             const distance = center === 0 ? 0 : Math.abs(index - center) / center;
             const centerX = slotWidth * (index + 0.5);
-            const top = 12 + distance * distance * (mobile ? 34 : 58);
+            const arcOffsetY = 12 + distance * distance * (mobile ? 34 : 58);
             item.style.setProperty("--card-width", cardWidth + "px");
+            item.style.setProperty("--card-height", cardHeight + "px");
             item.style.setProperty("--offset-x", (centerX - stageWidth / 2) + "px");
-            item.style.setProperty("--top", top + "px");
+            item.style.setProperty("--offset-y", arcOffsetY + "px");
             item.style.zIndex = String(100 - Math.round(distance * 10));
         });
         if (carouselCategory && carouselTitle) {
