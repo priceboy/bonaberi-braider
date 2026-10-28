@@ -15,12 +15,11 @@ class SiteConfiguration(models.Model):
         help_text="Salon interior photo used behind the Home page content.",
     )
     booking_url = models.URLField(
-        blank=True, default="",
+        blank=True, default="https://wa.me/237672748984",
         verbose_name="WhatsApp booking link",
         help_text=(
-            "Use a WhatsApp click-to-chat URL, e.g. https://wa.me/237XXXXXXXXX "
-            "(international number, digits only; no +, spaces, or dashes). "
-            "Leave blank until the salon's number is confirmed."
+            "WhatsApp click-to-chat link. The current configured number is "
+            "+237 672 74 89 84. Update this URL if the salon changes its booking number."
         ),
     )
     address = models.CharField(max_length=250, blank=True, default="")
