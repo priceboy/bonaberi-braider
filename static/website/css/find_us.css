@@ -185,3 +185,5 @@
 .find-us__empty {
     color: var(--text-secondary);
 }
+
+.find-us__address { color: var(--text-secondary); padding: 8px 2px; overflow-wrap: anywhere; }

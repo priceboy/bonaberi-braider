@@ -1,148 +1,187 @@
 (function () {
-    // Position carousel items around a semicircle
-    const track = document.getElementById('carouselTrack');
-    const items = Array.from(document.querySelectorAll('[data-carousel-item]'));
-    if (track && items.length > 0) {
-        const radius = window.innerWidth < 640 ? 130 : window.innerWidth < 900 ? 150 : 190;
-        items.forEach((item, idx) => {
-            const angle = (idx / items.length) * 180; // 180 degree semicircle
-            item.style.setProperty('--angle', angle + 'deg');
-            item.style.setProperty('--radius', radius + 'px');
-            item.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius}px) rotate(-${angle}deg)`;
+    const track = document.getElementById("carouselTrack");
+    const items = Array.from(document.querySelectorAll("[data-carousel-item]"));
+    const galleryItems = Array.from(document.querySelectorAll("[data-gallery-item]"));
+    const viewer = document.getElementById("imageViewer");
+    const viewerImage = document.getElementById("viewerImage");
+    const viewerCategory = document.getElementById("viewerCategory");
+    const viewerTitle = document.getElementById("viewerTitle");
+    const viewerCounter = document.getElementById("viewerCounter");
+    const viewerClose = document.getElementById("viewerClose");
+    const viewerPrev = document.getElementById("viewerPrev");
+    const viewerNext = document.getElementById("viewerNext");
+    const carouselCategory = document.getElementById("carouselCategory");
+    const carouselTitle = document.getElementById("carouselTitle");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function positionCarousel() {
+        if (!track || !items.length) return;
+        const radius = window.innerWidth < 640 ? Math.min(128, window.innerWidth * 0.28) : window.innerWidth < 900 ? 150 : 190;
+        items.forEach((item, index) => {
+            const ratio = items.length === 1 ? 0.5 : index / (items.length - 1);
+            const angle = -90 + ratio * 180;
+            item.style.setProperty("--angle", angle + "deg");
+            item.style.setProperty("--radius", radius + "px");
         });
     }
+    positionCarousel();
+    window.addEventListener("resize", positionCarousel, { passive: true });
+    if (reduceMotion.matches && track) track.style.animation = "none";
 
-    // Carousel caption
-    const carouselCategory = document.getElementById('carouselCategory');
-    const carouselTitle = document.getElementById('carouselTitle');
-    if (items.length > 0 && carouselCategory && carouselTitle) {
-        const first = items[0];
-        carouselCategory.textContent = first.dataset.category || '';
-        carouselTitle.textContent = first.dataset.title || '';
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                carouselCategory.textContent = item.dataset.category || '';
-                carouselTitle.textContent = item.dataset.title || '';
-                openViewer({ src: item.dataset.src, category: item.dataset.category, title: item.dataset.title, id: item.dataset.id });
-            });
-        });
+    if (items.length && carouselCategory && carouselTitle) {
+        carouselCategory.textContent = items[0].dataset.category || "";
+        carouselTitle.textContent = items[0].dataset.title || "";
     }
-
-    // Gallery items
-    const galleryItems = Array.from(document.querySelectorAll('[data-gallery-item]'));
-    galleryItems.forEach(item => {
-        item.addEventListener('click', () => {
-            openViewer({ src: item.dataset.src, category: item.dataset.category, title: item.dataset.title, id: item.dataset.id });
-        });
-    });
-
-    // Viewer
-    const viewer = document.getElementById('imageViewer');
-    const viewerImage = document.getElementById('viewerImage');
-    const viewerCategory = document.getElementById('viewerCategory');
-    const viewerTitle = document.getElementById('viewerTitle');
-    const viewerCounter = document.getElementById('viewerCounter');
-    const viewerClose = document.getElementById('viewerClose');
-    const viewerPrev = document.getElementById('viewerPrev');
-    const viewerNext = document.getElementById('viewerNext');
-    const body = document.body;
 
     let currentList = [];
     let currentIndex = 0;
+    let lastTrigger = null;
+    let scrollY = 0;
+    let previousBodyStyles = {};
 
     function buildCategoryList(selectedCategory, selectedId) {
-        const list = [];
-        // Include all items (gallery + carousel) that share category
-        [...galleryItems, ...items].forEach(el => {
-            if (el.dataset.category === selectedCategory) {
-                list.push({
-                    src: el.dataset.src,
-                    category: el.dataset.category,
-                    title: el.dataset.title,
-                    id: el.dataset.id
-                });
-            }
-        });
-        // Remove duplicates by src+id if any
-        const unique = [];
         const seen = new Set();
-        list.forEach(x => {
-            const key = x.id + '|' + x.src;
-            if (!seen.has(key)) {
+        currentList = [...galleryItems, ...items]
+            .filter((element) => element.dataset.category === selectedCategory)
+            .map((element) => ({
+                src: element.dataset.src,
+                category: element.dataset.category,
+                title: element.dataset.title,
+                id: element.dataset.id,
+            }))
+            .filter((entry) => {
+                const key = entry.id + "|" + entry.src;
+                if (!entry.src || seen.has(key)) return false;
                 seen.add(key);
-                unique.push(x);
-            }
-        });
-        // Sort by DOM order approximation - keep original order
-        currentList = unique;
-        currentIndex = unique.findIndex(x => x.id === selectedId && x.src);
-        if (currentIndex < 0 && unique.length > 0) currentIndex = 0;
+                return true;
+            });
+        currentIndex = currentList.findIndex((entry) => entry.id === selectedId);
+        if (currentIndex < 0) currentIndex = 0;
     }
 
     function renderViewer() {
-        if (currentList.length === 0) return;
-        const item = currentList[currentIndex];
-        viewerImage.src = item.src;
-        viewerImage.alt = item.title || '';
-        viewerCategory.textContent = item.category || '';
-        viewerTitle.textContent = item.title || '';
-        viewerCounter.textContent = (currentIndex + 1) + ' of ' + currentList.length;
+        if (!currentList.length) return;
+        const entry = currentList[currentIndex];
+        viewerImage.src = entry.src;
+        viewerImage.alt = entry.title || "Hairstyle";
+        viewerCategory.textContent = entry.category || "";
+        viewerTitle.textContent = entry.title || "";
+        viewerCounter.textContent = `${currentIndex + 1} of ${currentList.length}`;
+        const singleImage = currentList.length < 2;
+        viewerPrev.disabled = singleImage;
+        viewerNext.disabled = singleImage;
     }
 
-    function openViewer(data) {
-        buildCategoryList(data.category, data.id);
-        viewer.classList.add('is-open');
-        body.classList.add('viewer-open');
-        body.style.overflow = 'hidden';
+    function openViewer(trigger) {
+        if (!viewer || !trigger.dataset.src) return;
+        lastTrigger = trigger;
+        buildCategoryList(trigger.dataset.category, trigger.dataset.id);
+        if (!currentList.length) return;
+
+        scrollY = window.scrollY;
+        previousBodyStyles = {
+            position: document.body.style.position,
+            top: document.body.style.top,
+            width: document.body.style.width,
+            overflow: document.body.style.overflow,
+        };
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = "100%";
+        document.body.style.overflow = "hidden";
+        viewer.classList.add("is-open");
+        viewer.setAttribute("aria-hidden", "false");
+        document.body.classList.add("viewer-open");
         renderViewer();
-        // Focus management
         viewerClose.focus();
     }
 
     function closeViewer() {
-        viewer.classList.remove('is-open');
-        body.classList.remove('viewer-open');
-        body.style.overflow = '';
+        if (!viewer || !viewer.classList.contains("is-open")) return;
+        viewer.classList.remove("is-open");
+        viewer.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("viewer-open");
+        Object.entries(previousBodyStyles).forEach(([property, value]) => {
+            document.body.style[property] = value;
+        });
+        window.scrollTo(0, scrollY);
+        if (lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
     }
 
-    viewerClose.addEventListener('click', closeViewer);
-    document.addEventListener('keydown', (e) => {
-        if (!viewer.classList.contains('is-open')) return;
-        if (e.key === 'Escape') {
-            closeViewer();
-        } else if (e.key === 'ArrowLeft') {
-            currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
-            renderViewer();
-        } else if (e.key === 'ArrowRight') {
-            currentIndex = (currentIndex + 1) % currentList.length;
-            renderViewer();
-        }
+    items.forEach((item) => {
+        item.addEventListener("click", () => {
+            if (carouselCategory && carouselTitle) {
+                carouselCategory.textContent = item.dataset.category || "";
+                carouselTitle.textContent = item.dataset.title || "";
+            }
+            openViewer(item);
+        });
     });
+    galleryItems.forEach((item) => item.addEventListener("click", () => openViewer(item)));
 
-    viewerPrev.addEventListener('click', () => {
+    if (!viewer || !viewerClose || !viewerPrev || !viewerNext || !viewerImage) return;
+
+    viewerClose.addEventListener("click", closeViewer);
+    viewerPrev.addEventListener("click", () => {
+        if (!currentList.length) return;
         currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
         renderViewer();
     });
-    viewerNext.addEventListener('click', () => {
+    viewerNext.addEventListener("click", () => {
+        if (!currentList.length) return;
         currentIndex = (currentIndex + 1) % currentList.length;
         renderViewer();
     });
 
-    // Touch swipe
-    let touchStartX = 0;
-    let touchEndX = 0;
-    viewerImage.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    viewerImage.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        if (Math.abs(touchEndX - touchStartX) > 60) {
-            if (touchEndX < touchStartX) {
-                currentIndex = (currentIndex + 1) % currentList.length;
-            } else {
-                currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
-            }
-            renderViewer();
+    document.addEventListener("keydown", (event) => {
+        if (!viewer.classList.contains("is-open")) return;
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeViewer();
+            return;
         }
+        if (event.key === "ArrowLeft" && currentList.length > 1) {
+            event.preventDefault();
+            currentIndex = (currentIndex - 1 + currentList.length) % currentList.length;
+            renderViewer();
+            return;
+        }
+        if (event.key === "ArrowRight" && currentList.length > 1) {
+            event.preventDefault();
+            currentIndex = (currentIndex + 1) % currentList.length;
+            renderViewer();
+            return;
+        }
+        if (event.key === "Tab") {
+            const controls = [viewerClose, viewerPrev, viewerNext].filter((control) => !control.disabled);
+            const first = controls[0];
+            const last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+    });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    viewerImage.addEventListener("touchstart", (event) => {
+        const touch = event.changedTouches[0];
+        touchStartX = touch.screenX;
+        touchStartY = touch.screenY;
     }, { passive: true });
+    viewerImage.addEventListener("touchend", (event) => {
+        const touch = event.changedTouches[0];
+        const deltaX = touch.screenX - touchStartX;
+        const deltaY = touch.screenY - touchStartY;
+        if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) || currentList.length < 2) return;
+        currentIndex = deltaX < 0
+            ? (currentIndex + 1) % currentList.length
+            : (currentIndex - 1 + currentList.length) % currentList.length;
+        renderViewer();
+    }, { passive: true });
+
 })();

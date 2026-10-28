@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>{% block title %}Phanie Magic Touch{% endblock %}</title>
+    <title>{% block title %}Luxury Salon Website{% endblock %}</title>
     <meta name="description" content="{% block description %}Luxury salon website{% endblock %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,15 +17,15 @@
         {% block content %}{% endblock %}
     </main>
 
-    <nav class="bottom-nav" id="bottomNav">
+    <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation">
         <div class="bottom-nav__inner">
-            <a href="{% url 'home' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+            <a href="{% url 'website:home' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
                 <span>Home</span>
             </a>
-            <a href="{% url 'our_work' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'our_work' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'our_work' %}aria-current="page"{% endif %}>
+            <a href="{% url 'website:our_work' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'our_work' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'our_work' %}aria-current="page"{% endif %}>
                 <span>Our Work</span>
             </a>
-            <a href="{% url 'find_us' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'find_us' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'find_us' %}aria-current="page"{% endif %}>
+            <a href="{% url 'website:find_us' %}" class="bottom-nav__item {% if request.resolver_match.url_name == 'find_us' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'find_us' %}aria-current="page"{% endif %}>
                 <span>How to Find Us</span>
             </a>
         </div>

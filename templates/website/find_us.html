@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}How to Find Us | Phanie Magic Touch{% endblock %}
+{% block title %}{% if site_config and site_config.salon_name %}How to Find Us | {{ site_config.salon_name }}{% else %}How to Find Us | Salon{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'website/css/find_us.css' %}">
@@ -12,33 +12,28 @@
     <header class="find-us__header">
         <span class="find-us__eyebrow">Location</span>
         <h1 class="find-us__title">How to Find Us</h1>
-        <p class="find-us__subtitle">
-            Discretion, clarity, and ease of arrival. Follow the sequence below for a seamless journey to the atelier.
-        </p>
+        <p class="find-us__subtitle">We look forward to welcoming you. Use the map and route photographs below when location details are available.</p>
     </header>
 
     <div class="find-us__grid">
-        <section class="find-us__map-section">
+        <section class="find-us__map-section" aria-label="Salon map and address">
             <div class="find-us__map-frame">
-                {% if location_configured and map_embed_url %}
-                <iframe src="{{ map_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                {% if location_configured %}
+                <iframe title="Map showing the salon location" src="{{ map_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 {% else %}
                 <div class="find-us__map-placeholder">
                     <span class="find-us__map-placeholder-title">Map to be configured</span>
-                    <p>Exact address and map coordinates are still pending from the owner.</p>
+                    <p>{% if address %}{{ address }}{% else %}The salon address and map link are awaiting confirmation.{% endif %}</p>
                 </div>
                 {% endif %}
             </div>
             <div class="find-us__map-actions">
                 {% if map_open_url %}
-                <a class="find-us__map-link" href="{{ map_open_url }}" target="_blank" rel="noreferrer">
-                    Open in Maps
-                    <span aria-hidden="true">↗</span>
+                <a class="find-us__map-link" href="{{ map_open_url }}" target="_blank" rel="noopener noreferrer">
+                    Open in Maps <span aria-hidden="true">↗</span>
                 </a>
                 {% endif %}
-                {% if address %}
-                <div class="find-us__map-link" style="pointer-events: none;">{{ address }}</div>
-                {% endif %}
+                {% if address %}<p class="find-us__address">{{ address }}</p>{% endif %}
             </div>
         </section>
 
@@ -46,7 +41,7 @@
             <header class="find-us__steps-header">
                 <span class="find-us__eyebrow">Route</span>
                 <h2 class="find-us__steps-title">Step by step</h2>
-                <p class="find-us__subtitle">Numbered for clarity. Follow in order on arrival.</p>
+                <p class="find-us__subtitle">Follow the numbered directions in order.</p>
             </header>
             {% if steps %}
                 {% for step in steps %}
@@ -55,7 +50,7 @@
                         {% if step.image %}
                         <img src="{{ step.image.url }}" alt="{{ step.title|default:'Directional photograph' }}" loading="lazy">
                         {% else %}
-                        <div class="find-us__step-placeholder"></div>
+                        <div class="find-us__step-placeholder" role="img" aria-label="Directional photograph not yet supplied"></div>
                         {% endif %}
                     </div>
                     <div class="find-us__step-content">

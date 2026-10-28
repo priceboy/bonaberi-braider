@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Home | Phanie's Magic Touch{% endblock %}
+{% block title %}{% if site_config and site_config.salon_name %}Home | {{ site_config.salon_name }}{% else %}Home | Salon{% endif %}{% endblock %}
+{% block description %}{% if tagline %}{{ tagline }}{% else %}A considered approach to hair artistry.{% endif %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'website/css/home.css' %}">
@@ -10,38 +11,36 @@
 {% block body_class %}home-page{% endblock %}
 
 {% block content %}
-<div class="home-bg{% if home_bg_placeholder %} home-bg--placeholder{% endif %}"></div>
-<div class="home-overlay"></div>
+<div class="home-bg{% if home_bg_placeholder %} home-bg--placeholder{% else %} home-bg--configured{% endif %}"{% if site_config and site_config.home_background %} style="background-image: linear-gradient(180deg, rgba(15, 13, 11, 0.35) 0%, rgba(15, 13, 11, 0.86) 100%), url('{{ site_config.home_background.url }}');"{% endif %} aria-hidden="true"></div>
+<div class="home-overlay" aria-hidden="true"></div>
 
 <header class="home-header">
-    <div class="home-brand">{{ salon_name|default:"Phanie Magic Touch" }}</div>
-    <p class="home-tagline">Restrained. Editorial. Luxurious.</p>
+    <div class="home-brand">{{ salon_name|default:"Salon name to be confirmed" }}</div>
+    {% if tagline %}<p class="home-tagline">{{ tagline }}</p>{% endif %}
 </header>
 
 <section class="home-content">
     <div class="home-copy">
-        <h1 class="home-headline">
-            Atelier
-            <em>of refinement</em>
-        </h1>
-        <p class="home-text">
-            A considered approach to hair artistry. Subtle precision, considered details, and an atmosphere designed for discretion.
-        </p>
-        <a class="home-cta" href="{{ booking_url|default:'#' }}">
-            Book an Appointment
-            <span aria-hidden="true">→</span>
+        <h1 class="home-headline">{% if hero_title %}{{ hero_title|linebreaksbr }}{% else %}Hair artistry{% endif %}</h1>
+        <p class="home-text">{% if hero_text %}{{ hero_text }}{% else %}Salon story and service details will appear here once confirmed.{% endif %}</p>
+        {% if booking_url %}
+        <a class="home-cta" href="{{ booking_url }}">
+            Book an Appointment <span aria-hidden="true">→</span>
         </a>
+        {% else %}
+        <p class="home-cta home-cta--disabled" aria-label="Booking link not configured">Booking details coming soon</p>
+        {% endif %}
     </div>
 
     <div class="home-portraits{% if portraits|length == 0 %} home-portraits--empty{% endif %}" id="homePortraits" data-count="{{ portraits|length }}">
         {% if portraits %}
             {% for portrait in portraits %}
             <figure class="home-portrait{% if forloop.first %} is-active{% endif %}" data-portrait>
-                <img src="{{ portrait.image.url }}" alt="{{ portrait.title|default:'Client hairstyle cutout' }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                <img src="{{ portrait.display_image }}" alt="{{ portrait.title|default:'Client hairstyle cutout' }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             </figure>
             {% endfor %}
         {% else %}
-            <p>Portraits will appear here once six client cutouts are added in Admin.</p>
+            <p>Client portraits will appear here after hairstyle cutouts are added in Admin.</p>
         {% endif %}
     </div>
 </section>
