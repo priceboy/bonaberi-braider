@@ -26,15 +26,15 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Hairstyle)
 class HairstyleAdmin(admin.ModelAdmin):
     list_display = [
-        "title", "category", "is_active", "show_on_home",
+        "title", "category", "is_demo", "is_active", "show_on_home",
         "show_in_carousel", "sort_order", "thumbnail",
     ]
     list_editable = ["sort_order", "show_on_home", "show_in_carousel", "is_active"]
-    list_filter = ["category", "is_active", "show_on_home", "show_in_carousel"]
+    list_filter = ["category", "is_demo", "is_active", "show_on_home", "show_in_carousel"]
     search_fields = ["title", "description"]
     ordering = ["sort_order", "created_at"]
     fields = [
-        "title", "category", "image", "description",
+        "title", "category", "image", "image_url", "is_demo", "description",
         "show_on_home", "show_in_carousel", "is_active", "sort_order",
     ]
 
@@ -47,7 +47,7 @@ class HairstyleAdmin(admin.ModelAdmin):
                 image_url,
             )
         return "No image"
-
+    
 
 @admin.register(DirectionStep)
 class DirectionStepAdmin(admin.ModelAdmin):
