@@ -1,4 +1,5 @@
 from django.db import migrations, models
+from django.utils.text import slugify
 
 DEMO_STYLES = [
     ("Sculpted Knotless Braids", "Braids", "photo-1522337360788-8b13dee7a37e", True, 1),
@@ -14,7 +15,9 @@ def seed_demo_styles(apps, schema_editor):
     Category = apps.get_model("website", "Category")
     Hairstyle = apps.get_model("website", "Hairstyle")
     for title, category_name, image_id, show_home, order in DEMO_STYLES:
-        category, _ = Category.objects.get_or_create(name=category_name)
+        category, _ = Category.objects.get_or_create(
+            name=category_name, defaults={"slug": slugify(category_name)}
+        )
         Hairstyle.objects.get_or_create(
             title=title,
             category=category,
