@@ -114,6 +114,7 @@
     cursor: pointer;
     border: none;
     background: transparent;
+    color: #ffffff;
     text-align: left;
     padding: 0;
 }
@@ -127,8 +128,8 @@
     flex-direction: column;
     gap: 4px;
 }
-.gallery__category { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; color: var(--accent); }
-.gallery__item-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; letter-spacing: -0.02em; }
+.gallery__category { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; color: #ffd58a; }
+.gallery__item-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; letter-spacing: -0.02em; color: #ffffff; }
 
 @media (min-width: 900px) { .gallery__grid { column-count: 3; } }
 @media (min-width: 1200px) { .gallery__grid { column-count: 4; } }
