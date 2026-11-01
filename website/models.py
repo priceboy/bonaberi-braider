@@ -40,14 +40,10 @@ class SiteConfiguration(models.Model):
         return self.salon_name or "Site configuration"
 
     def save(self, *args, **kwargs):
-        # Keep one configuration record without adding a dependency on a
-        # third-party singleton package.
         if self.pk is None:
             existing = type(self).objects.order_by("pk").first()
             if existing:
                 self.pk = existing.pk
-                # QuerySet.create() passes force_insert=True. Once we reuse
-                # the singleton row's primary key, this must become an update.
                 kwargs.pop("force_insert", None)
         super().save(*args, **kwargs)
 
@@ -89,7 +85,7 @@ class Hairstyle(models.Model):
     )
     is_demo = models.BooleanField(
         default=False,
-        help_text="Demo entries use stock photos. Uncheck this when replacing with real salon work.",
+        help_text="Demo entries use stock photos. Uploading a real image automatically clears this flag.",
     )
     description = models.CharField(max_length=300, blank=True, default="")
     show_on_home = models.BooleanField(default=False)
@@ -103,6 +99,12 @@ class Hairstyle(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # A real admin upload takes precedence over image_url and is no longer a demo.
+        if self.image:
+            self.is_demo = False
+        super().save(*args, **kwargs)
 
     def display_image(self):
         if self.image:
