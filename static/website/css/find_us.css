@@ -96,7 +96,8 @@
     gap: 12px;
 }
 
-.find-us__map-link {
+.find-us__map-link,
+body a.find-us__map-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -107,7 +108,7 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.76rem;
-    color: #000000;
+    color: #000000 !important;
     background: #fffaf0;
     border-color: #fffaf0;
     text-decoration: none;
@@ -116,7 +117,9 @@
 }
 
 .find-us__map-link:hover,
-.find-us__map-link:focus-visible {
+.find-us__map-link:focus-visible,
+body a.find-us__map-link:hover,
+body a.find-us__map-link:focus-visible {
     background: #fffdf7;
     border-color: #fffdf7;
     transform: translateY(-1px);
