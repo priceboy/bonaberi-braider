@@ -29,9 +29,12 @@
             <div class="find-us__map-actions">
                 {% if map_open_url %}
                 <a class="find-us__map-link" href="{{ map_open_url }}" target="_blank" rel="noopener noreferrer">
-                    Open in Google Maps <span aria-hidden="true">↗</span>
+                    <span>Android · Google Maps</span> <span aria-hidden="true">↗</span>
                 </a>
                 {% endif %}
+                <a class="find-us__map-link" href="{{ map_ios_url }}" target="_blank" rel="noopener noreferrer">
+                    <span>iPhone · Apple Maps</span> <span aria-hidden="true">↗</span>
+                </a>
                 {% if address %}<p class="find-us__address">{{ address }}</p>{% endif %}
             </div>
         </section>
