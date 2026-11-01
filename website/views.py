@@ -91,7 +91,8 @@ def find_us(request):
         {
             "site_config": config,
             "map_embed_url": map_embed_url,
-            "map_open_url": map_open_url,\n            "map_ios_url": map_ios_url,
+            "map_open_url": map_open_url,
+            "map_ios_url": map_ios_url,
             "address": address,
             "location_configured": True,
             "steps": steps,
