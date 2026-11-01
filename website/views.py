@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import render
+from urllib.parse import quote_plus
 
 from .models import Category, DirectionStep, Hairstyle, SiteConfiguration
 
@@ -82,6 +83,8 @@ def find_us(request):
         config.address if config and config.address
         else f"{SALON_LATITUDE}° N, {SALON_LONGITUDE}° E"
     )
+    map_destination = config.address if config and config.address else SALON_COORDINATES
+    map_ios_url = f"https://maps.apple.com/?daddr={quote_plus(map_destination)}"
     return render(
         request,
         "website/find_us.html",
@@ -89,6 +92,7 @@ def find_us(request):
             "site_config": config,
             "map_embed_url": map_embed_url,
             "map_open_url": map_open_url,
+            "map_ios_url": map_ios_url,
             "address": address,
             "location_configured": True,
             "steps": steps,
