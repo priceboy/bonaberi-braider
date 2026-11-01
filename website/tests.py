@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Category, Hairstyle, SiteConfiguration
+from .models import Category, DirectionStep, Hairstyle, SiteConfiguration
 
 
 class PublicPageTests(TestCase):
@@ -29,10 +29,12 @@ class PublicPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The gallery will appear")
 
-    def test_find_us_page_renders_without_location_configuration(self):
+    def test_find_us_page_uses_confirmed_coordinate_defaults(self):
         response = self.client.get(reverse("website:find_us"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Map to be configured")
+        self.assertContains(response, "4.09235, 9.64496")
+        self.assertContains(response, "https://www.google.com/maps?q=4.09235, 9.64496&output=embed")
+        self.assertContains(response, "Open in Google Maps")
 
     def test_site_configuration_controls_brand_booking_and_location(self):
         SiteConfiguration.objects.create(
@@ -52,7 +54,33 @@ class PublicPageTests(TestCase):
         self.assertContains(home, "floating-booking")
         self.assertContains(find_us, "Owner-supplied address")
         self.assertContains(find_us, "https://maps.google.com/?q=example")
-        self.assertFalse(find_us.context["location_configured"])
+        self.assertContains(find_us, "https://maps.google.com/?q=example")
+
+
+    def test_find_us_page_displays_active_direction_steps_in_order(self):
+        config = SiteConfiguration.objects.create(salon_name="Confirmed Salon")
+        DirectionStep.objects.create(
+            site_configuration=config, title="Second landmark",
+            instruction="Turn left at the second junction.", order=2,
+        )
+        DirectionStep.objects.create(
+            site_configuration=config, title="First landmark",
+            instruction="Start at the main road.", order=1,
+        )
+        DirectionStep.objects.create(
+            site_configuration=config, title="Hidden step",
+            instruction="This should not appear.", order=3, is_active=False,
+        )
+
+        response = self.client.get(reverse("website:find_us"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First landmark")
+        self.assertContains(response, "Second landmark")
+        self.assertNotContains(response, "Hidden step")
+        self.assertLess(
+            response.content.index(b"First landmark"),
+            response.content.index(b"Second landmark"),
+        )
 
 
 class HairstyleModelTests(TestCase):

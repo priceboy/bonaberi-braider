@@ -4,6 +4,14 @@ from django.shortcuts import render
 from .models import Category, DirectionStep, Hairstyle, SiteConfiguration
 
 
+# Confirmed salon pin. Admin-configured map URLs can override these defaults.
+SALON_LATITUDE = "4.09235"
+SALON_LONGITUDE = "9.64496"
+SALON_COORDINATES = f"{SALON_LATITUDE}, {SALON_LONGITUDE}"
+DEFAULT_MAP_EMBED_URL = f"https://www.google.com/maps?q={SALON_COORDINATES}&output=embed"
+DEFAULT_MAP_OPEN_URL = f"https://www.google.com/maps?q={SALON_COORDINATES}"
+
+
 def site_configuration():
     return SiteConfiguration.objects.order_by("pk").first()
 
@@ -56,16 +64,33 @@ def our_work(request):
 
 def find_us(request):
     config = site_configuration()
-    steps = DirectionStep.objects.filter(is_active=True).order_by("order", "id")
+    steps = DirectionStep.objects.filter(
+        is_active=True,
+    ).filter(
+        Q(site_configuration=config) | Q(site_configuration__isnull=True)
+    ).order_by("order", "id")
+    map_embed_url = (
+        config.map_embed_url if config and config.map_embed_url
+        else DEFAULT_MAP_EMBED_URL
+    )
+    map_open_url = (
+        config.map_open_url if config and config.map_open_url
+        else config.map_embed_url if config and config.map_embed_url
+        else DEFAULT_MAP_OPEN_URL
+    )
+    address = (
+        config.address if config and config.address
+        else f"{SALON_LATITUDE}° N, {SALON_LONGITUDE}° E"
+    )
     return render(
         request,
         "website/find_us.html",
         {
             "site_config": config,
-            "map_embed_url": config.map_embed_url if config else "",
-            "map_open_url": (config.map_open_url or config.map_embed_url) if config else "",
-            "address": config.address if config else "",
-            "location_configured": bool(config and config.map_embed_url),
+            "map_embed_url": map_embed_url,
+            "map_open_url": map_open_url,
+            "address": address,
+            "location_configured": True,
             "steps": steps,
         },
     )
