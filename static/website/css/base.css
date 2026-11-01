@@ -33,7 +33,7 @@ body::before {
     pointer-events: none;
     background:
         linear-gradient(180deg, rgba(15, 13, 11, 0.62), rgba(15, 13, 11, 0.88)),
-        url("../images/main-background.jpeg") center / cover no-repeat;
+        url("../images/Main%20backgroung%20image.jpeg") center / cover no-repeat;
     opacity: 1;
 }
 
