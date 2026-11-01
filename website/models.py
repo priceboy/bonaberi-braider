@@ -122,6 +122,10 @@ class Hairstyle(models.Model):
 
 
 class DirectionStep(models.Model):
+    site_configuration = models.ForeignKey(
+        SiteConfiguration, on_delete=models.CASCADE, related_name="direction_steps",
+        null=True, blank=True,
+    )
     title = models.CharField(max_length=200, blank=True, default="")
     image = models.ImageField(upload_to="directions/", blank=True, null=True)
     instruction = models.TextField()
