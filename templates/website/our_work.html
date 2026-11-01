@@ -15,7 +15,7 @@
         <p class="our-work__subtitle">
             A curated study of texture, structure, and movement. Each look is considered with restraint and finished with precision.
         </p>
-        <p class="demo-disclaimer">Demo gallery: these stock photos are temporary placeholders, not verified salon work.</p>
+        {% if has_demo_images %}<p class="demo-disclaimer">Demo gallery: remaining stock photos are temporary placeholders, not verified salon work.</p>{% endif %}
     </header>
 
     {% if carousel_items %}
