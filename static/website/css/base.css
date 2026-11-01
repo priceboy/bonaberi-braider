@@ -11,12 +11,12 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; background: var(--bg); }
 body {
     position: relative;
     isolation: isolate;
     font-family: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
+    background: transparent;
     color: var(--text-primary);
     line-height: 1.7;
     font-size: 16px;
