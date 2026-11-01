@@ -64,7 +64,11 @@ def our_work(request):
 
 def find_us(request):
     config = site_configuration()
-    steps = DirectionStep.objects.filter(is_active=True).order_by("order", "id")
+    steps = DirectionStep.objects.filter(
+        is_active=True,
+    ).filter(
+        Q(site_configuration=config) | Q(site_configuration__isnull=True)
+    ).order_by("order", "id")
     map_embed_url = (
         config.map_embed_url if config and config.map_embed_url
         else DEFAULT_MAP_EMBED_URL
