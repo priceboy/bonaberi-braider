@@ -12,25 +12,24 @@
     <header class="find-us__header">
         <span class="find-us__eyebrow">Location</span>
         <h1 class="find-us__title">How to Find Us</h1>
-        <p class="find-us__subtitle">We look forward to welcoming you. Use the map and route photographs below when location details are available.</p>
+        <p class="find-us__subtitle">We look forward to welcoming you. Find our location on the map, then follow the route guide to reach us.</p>
     </header>
 
     <div class="find-us__grid">
         <section class="find-us__map-section" aria-label="Salon map and address">
             <div class="find-us__map-frame">
-                {% if location_configured %}
-                <iframe title="Map showing the salon location" src="{{ map_embed_url }}" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                {% else %}
-                <div class="find-us__map-placeholder">
-                    <span class="find-us__map-placeholder-title">Map to be configured</span>
-                    <p>{% if address %}{{ address }}{% else %}The salon address and map link are awaiting confirmation.{% endif %}</p>
-                </div>
-                {% endif %}
+                <iframe
+                    title="Map showing the salon location"
+                    src="{{ map_embed_url }}"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
             <div class="find-us__map-actions">
                 {% if map_open_url %}
                 <a class="find-us__map-link" href="{{ map_open_url }}" target="_blank" rel="noopener noreferrer">
-                    Open in Maps <span aria-hidden="true">↗</span>
+                    Open in Google Maps <span aria-hidden="true">↗</span>
                 </a>
                 {% endif %}
                 {% if address %}<p class="find-us__address">{{ address }}</p>{% endif %}
