@@ -58,6 +58,7 @@ def our_work(request):
             "site_config": site_configuration(),
             "carousel_items": base_queryset.filter(show_in_carousel=True),
             "gallery_items": base_queryset,
+            "has_demo_images": base_queryset.filter(is_demo=True).exists(),
             "categories": Category.objects.all().order_by("name"),
         },
     )
