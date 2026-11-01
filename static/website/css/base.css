@@ -32,7 +32,7 @@ body::before {
     z-index: -1;
     pointer-events: none;
     background:
-        linear-gradient(180deg, rgba(15, 13, 11, 0.18), rgba(15, 13, 11, 0.34)),
+        linear-gradient(180deg, rgba(15, 13, 11, 0.10), rgba(15, 13, 11, 0.24)),
         url("../images/Main%20backgroung%20image.jpeg") center 42% / cover no-repeat;
     opacity: 1;
 }
@@ -41,7 +41,7 @@ body::before {
 @media (max-width: 767px) {
     body::before {
         background:
-            linear-gradient(180deg, rgba(15, 13, 11, 0.12), rgba(15, 13, 11, 0.28)),
+            linear-gradient(180deg, rgba(15, 13, 11, 0.08), rgba(15, 13, 11, 0.20)),
             url("../images/Main%20backgroung%20image.jpeg") 56% 38% / cover no-repeat;
     }
 }
@@ -104,4 +104,62 @@ body.viewer-open .bottom-nav { display: none; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+
+/* High-contrast typography: keep every interface readable over the dark photo. */
+:root {
+    --text-primary: #ffffff;
+    --text-secondary: #eee8df;
+    --accent: #ffd58a;
+    --border: rgba(255, 213, 138, 0.48);
+    --nav-border: rgba(255, 213, 138, 0.58);
+}
+
+body {
+    color: var(--text-primary);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
+}
+
+body :is(h1, h2, h3, h4, h5, h6, .section-title, .page-title, .hero-title) {
+    color: #ffffff;
+    font-weight: 800;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.62);
+}
+
+body :is(p, li, label, small, .subtitle, .description, .muted, .text-secondary, figcaption) {
+    color: #eee8df;
+    font-weight: 600;
+}
+
+body a:not(.floating-booking):not(.bottom-nav__item) {
+    color: #ffdc9d;
+    font-weight: 700;
+}
+
+body :is(button, input, select, textarea, .btn, [role="button"]) {
+    font-weight: 700;
+}
+
+body :is(input, select, textarea)::placeholder {
+    color: #d9d1c7;
+    opacity: 1;
+}
+
+.bottom-nav__item {
+    color: #f2ece4;
+    font-weight: 800;
+}
+
+.bottom-nav__item.is-active,
+.bottom-nav__item[aria-current="page"],
+.bottom-nav__item:hover {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.floating-booking {
+    color: #ffffff;
+    font-weight: 800;
 }
