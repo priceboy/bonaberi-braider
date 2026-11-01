@@ -108,8 +108,8 @@
     letter-spacing: 0.1em;
     font-size: 0.76rem;
     color: #211b15;
-    background: #eee2cf;
-    border-color: #eee2cf;
+    background: #fffaf0;
+    border-color: #fffaf0;
     text-decoration: none;
     font-weight: 700;
     transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
@@ -117,8 +117,8 @@
 
 .find-us__map-link:hover,
 .find-us__map-link:focus-visible {
-    background: #f7eddf;
-    border-color: #f7eddf;
+    background: #fffdf7;
+    border-color: #fffdf7;
     transform: translateY(-1px);
 }
 
