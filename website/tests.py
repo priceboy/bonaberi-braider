@@ -33,7 +33,7 @@ class PublicPageTests(TestCase):
         response = self.client.get(reverse("website:find_us"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "4.09235, 9.64496")
-        self.assertContains(response, "https://www.google.com/maps?q=4.09235, 9.64496&output=embed")
+        self.assertContains(response, "https://www.google.com/maps?q=4.09235, 9.64496&amp;output=embed")
         self.assertContains(response, "Open in Google Maps")
 
     def test_site_configuration_controls_brand_booking_and_location(self):
