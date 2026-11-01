@@ -99,13 +99,23 @@
 .find-us__map-link {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 12px 22px;
     border-radius: 999px;
     border: 1px solid rgba(185, 160, 126, 0.6);
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     font-size: 0.76rem;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.find-us__map-link:hover,
+.find-us__map-link:focus-visible {
+    background: rgba(185, 160, 126, 0.16);
+    border-color: var(--accent);
 }
 
 .find-us__steps {
