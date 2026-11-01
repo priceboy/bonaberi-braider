@@ -24,7 +24,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Shared salon photograph: keep the image vivid and use only a light contrast wash. */
+/* Responsive salon backgrounds: use a landscape composition on desktop
+   and a dedicated portrait composition on smaller screens. */
 body::before {
     content: "";
     position: fixed;
@@ -33,16 +34,15 @@ body::before {
     pointer-events: none;
     background:
         linear-gradient(180deg, rgba(15, 13, 11, 0.10), rgba(15, 13, 11, 0.24)),
-        url("../images/Main%20backgroung%20image.jpeg") center 42% / cover no-repeat;
+        url("../images/salon-desktop-background.jpg") center / cover no-repeat;
     opacity: 1;
 }
 
-/* On narrow screens, shift the focal point to retain more of the useful subject area. */
 @media (max-width: 767px) {
     body::before {
         background:
             linear-gradient(180deg, rgba(15, 13, 11, 0.08), rgba(15, 13, 11, 0.20)),
-            url("../images/Main%20backgroung%20image.jpeg") 56% 38% / cover no-repeat;
+            url("../images/salon-mobile.jpg") center / cover no-repeat;
     }
 }
 
