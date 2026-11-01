@@ -4,8 +4,17 @@ from django.utils.html import format_html
 from .models import Category, DirectionStep, Hairstyle, SiteConfiguration
 
 
+class DirectionStepInline(admin.StackedInline):
+    model = DirectionStep
+    extra = 2
+    fields = ("order", "title", "image", "instruction", "is_active")
+    ordering = ("order", "id")
+    show_change_link = True
+
+
 @admin.register(SiteConfiguration)
 class SiteConfigurationAdmin(admin.ModelAdmin):
+    inlines = [DirectionStepInline]
     fieldsets = (
         ("Brand", {"fields": ("salon_name", "tagline", "hero_title", "hero_text")}),
         ("Home page", {"fields": ("home_background", "booking_url")}),
@@ -52,6 +61,7 @@ class HairstyleAdmin(admin.ModelAdmin):
 @admin.register(DirectionStep)
 class DirectionStepAdmin(admin.ModelAdmin):
     list_display = ["order", "title", "is_active"]
-    list_editable = ["is_active"]
+    list_editable = ["order", "is_active"]
     list_display_links = ["title"]
-    ordering = ["order"]
+    ordering = ["order", "id"]
+    fields = ["site_configuration", "order", "title", "image", "instruction", "is_active"]
